@@ -148,6 +148,7 @@
 #define OPTION_NAME_COLLECTION "collection"
 #define OPTION_NAME_USERNAME "username"
 #define OPTION_NAME_PASSWORD "password"
+#define OPTION_NAME_FORCESERVERID "force_server_id"
 #ifdef META_DRIVER
 #define OPTION_NAME_READ_PREFERENCE "read_preference"
 #define OPTION_NAME_AUTHENTICATION_DATABASE "authentication_database"
@@ -165,6 +166,7 @@
 #define DEFAULT_IP_ADDRESS "127.0.0.1"
 #define DEFAULT_PORT_NUMBER 27017
 #define DEFAULT_DATABASE_NAME "test"
+#define DEFAULT_FORCE_SERVER_ID true
 
 /* Defines for sending queries and converting types */
 #define EQUALITY_OPERATOR_NAME "="
@@ -190,9 +192,9 @@ typedef struct MongoValidOption
 
 /* Array of options that are valid for mongo_fdw */
 #ifdef META_DRIVER
-static const uint32 ValidOptionCount = 16;
+static const uint32 ValidOptionCount = 17;
 #else
-static const uint32 ValidOptionCount = 6;
+static const uint32 ValidOptionCount = 7;
 #endif
 static const MongoValidOption ValidOptionArray[] =
 {
@@ -212,7 +214,7 @@ static const MongoValidOption ValidOptionArray[] =
 	{ OPTION_NAME_CRL_FILE, ForeignServerRelationId },
 	{ OPTION_NAME_WEAK_CERT, ForeignServerRelationId },
 #endif
-
+	{ OPTION_NAME_FORCESERVERID, ForeignServerRelationId },
 	/* foreign table options */
 	{ OPTION_NAME_DATABASE, ForeignTableRelationId },
 	{ OPTION_NAME_COLLECTION, ForeignTableRelationId },
@@ -249,6 +251,7 @@ typedef struct MongoFdwOptions
  	char *crl_file;
  	bool weak_cert_validation;
 #endif
+	bool force_server_id;
 } MongoFdwOptions;
 
 

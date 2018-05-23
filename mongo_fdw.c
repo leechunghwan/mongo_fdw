@@ -816,7 +816,7 @@ MongoExecForeignInsert(EState *estate,
 			if (strcmp(slot->tts_tupleDescriptor->attrs[0]->attname.data, "__doc") == 0)
 				continue;
 
-			if (attnum == 1)
+			if (attnum == 1 && (options->force_server_id==true || isnull==true))
 			{
 				/*
 				 * Ignore the value of first column which is row identifier in MongoDb (_id)
@@ -1511,7 +1511,7 @@ static Datum
 ColumnValue(BSON_ITERATOR *bsonIterator, Oid columnTypeId, int32 columnTypeMod)
 {
 	Datum columnValue = 0;
-
+	BSON_TYPE t = BsonIterType(bsonIterator);
 	switch(columnTypeId)
 	{
 		case INT2OID:
@@ -1529,6 +1529,16 @@ ColumnValue(BSON_ITERATOR *bsonIterator, Oid columnTypeId, int32 columnTypeMod)
 		case INT8OID:
 		{
 			int64 value = BsonIterInt64(bsonIterator);
+			if (value == 0l) {
+				switch (t) {
+						case 1:
+								value = BsonIterDouble(bsonIterator);
+								break;
+						case 16:
+								value = BsonIterInt32(bsonIterator);
+								break;
+				}
+			}
 			columnValue = Int64GetDatum(value);
 			break;
 		}
